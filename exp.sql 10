@@ -1,0 +1,84 @@
+-- ==============================
+-- EXPERIMENT 10 (DBMS LAB)
+-- ==============================
+
+-- 1. Employees from dept 10 earning more than ANY employee in other departments
+SELECT ename
+FROM employee
+WHERE deptno = 10
+AND sal > ANY (SELECT sal FROM employee WHERE deptno <> 10);
+
+--------------------------------------------------
+
+-- 2. Employees from dept 10 earning more than ALL employees in other departments
+SELECT ename
+FROM employee
+WHERE deptno = 10
+AND sal > ALL (SELECT sal FROM employee WHERE deptno <> 10);
+
+--------------------------------------------------
+
+-- 3. Employees in SALES dept and grade = 3 (assuming salgrade table exists)
+SELECT e.*
+FROM employee e
+JOIN department d ON e.deptno = d.deptno
+JOIN salgrade s ON e.sal BETWEEN s.losal AND s.hisal
+WHERE d.dname = 'SALES' AND s.grade = 3;
+
+--------------------------------------------------
+
+-- 4. Employees who are not managers
+SELECT *
+FROM employee
+WHERE job <> 'MANAGER';
+
+--------------------------------------------------
+
+-- 5. Employees whose manager name is JONES
+SELECT e.ename
+FROM employee e
+JOIN employee m ON e.mgr = m.empno
+WHERE m.ename = 'JONES';
+
+--------------------------------------------------
+
+-- 6. Employees working in SALES department
+SELECT e.ename
+FROM employee e
+JOIN department d ON e.deptno = d.deptno
+WHERE d.dname = 'SALES';
+
+--------------------------------------------------
+
+-- 7. Employees with salary between 2000–5000 and location = CHICAGO
+SELECT e.ename, e.sal, e.comm
+FROM employee e
+JOIN department d ON e.deptno = d.deptno
+WHERE e.sal BETWEEN 2000 AND 5000
+AND d.loc = 'CHICAGO';
+
+--------------------------------------------------
+
+-- 8. Employees whose salary is greater than their manager
+SELECT e.ename
+FROM employee e
+JOIN employee m ON e.mgr = m.empno
+WHERE e.sal > m.sal;
+
+--------------------------------------------------
+
+-- 9. Employees working in same department as their manager
+SELECT e.ename
+FROM employee e
+JOIN employee m ON e.mgr = m.empno
+WHERE e.deptno = m.deptno;
+
+--------------------------------------------------
+
+-- 10. Employees in dept 10 or 30, grade not 4, joined before 31-Dec-82
+SELECT e.ename, s.grade
+FROM employee e
+JOIN salgrade s ON e.sal BETWEEN s.losal AND s.hisal
+WHERE e.deptno IN (10,30)
+AND s.grade <> 4
+AND e.hiredate < TO_DATE('31-DEC-82','DD-MON-YY');
