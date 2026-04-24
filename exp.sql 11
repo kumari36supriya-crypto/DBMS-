@@ -1,0 +1,92 @@
+-- ==============================
+-- EXPERIMENT 11 (DBMS LAB)
+-- ==============================
+
+-- 1. Delete employees joined before 31-Dec-82 and location is New York or Chicago
+DELETE FROM employee
+WHERE hiredate < TO_DATE('31-DEC-82','DD-MON-YY')
+AND deptno IN (
+    SELECT deptno FROM department 
+    WHERE loc IN ('NEW YORK','CHICAGO')
+);
+
+--------------------------------------------------
+
+-- 2. Employee name, job, dept name, location for managers
+SELECT e.ename, e.job, d.dname, d.loc
+FROM employee e
+JOIN department d ON e.deptno = d.deptno
+WHERE e.job = 'MANAGER';
+
+--------------------------------------------------
+
+-- 3. Name and salary of FORD if his salary equals highest in his grade
+SELECT e.ename, e.sal
+FROM employee e
+JOIN salgrade s ON e.sal BETWEEN s.losal AND s.hisal
+WHERE e.ename = 'FORD'
+AND e.sal = (
+    SELECT MAX(e2.sal)
+    FROM employee e2
+    JOIN salgrade s2 ON e2.sal BETWEEN s2.losal AND s2.hisal
+    WHERE s2.grade = s.grade
+);
+
+--------------------------------------------------
+
+-- 4. Top 5 earners of company
+SELECT ename, sal
+FROM employee
+ORDER BY sal DESC
+FETCH FIRST 5 ROWS ONLY;
+
+--------------------------------------------------
+
+-- 5. Employees with highest salary
+SELECT ename
+FROM employee
+WHERE sal = (SELECT MAX(sal) FROM employee);
+
+--------------------------------------------------
+
+-- 6. Employees whose salary = avg of max and min
+SELECT ename, sal
+FROM employee
+WHERE sal = (
+    (SELECT MAX(sal) FROM employee) + 
+    (SELECT MIN(sal) FROM employee)
+) / 2;
+
+--------------------------------------------------
+
+-- 7. Department names where at least 3 employees work
+SELECT d.dname
+FROM department d
+JOIN employee e ON d.deptno = e.deptno
+GROUP BY d.dname
+HAVING COUNT(e.empno) >= 3;
+
+--------------------------------------------------
+
+-- 8. Managers earning more than average salary of company
+SELECT ename
+FROM employee
+WHERE job = 'MANAGER'
+AND sal > (SELECT AVG(sal) FROM employee);
+
+--------------------------------------------------
+
+-- 9. Managers earning more than average salary of their employees
+SELECT m.ename
+FROM employee m
+JOIN employee e ON m.empno = e.mgr
+WHERE m.job = 'MANAGER'
+GROUP BY m.ename, m.sal
+HAVING m.sal > AVG(e.sal);
+
+--------------------------------------------------
+
+-- 10. Employees whose net pay >= any other employee salary
+SELECT ename, sal, comm, (sal + NVL(comm,0)) AS net_pay
+FROM employee
+WHERE (sal + NVL(comm,0)) >= ANY (SELECT sal FROM employee);
