@@ -1,0 +1,78 @@
+-- ==============================
+-- EXPERIMENT 7 (DBMS LAB)
+-- ==============================
+
+-- 1. Compute number of days remaining in this year
+SELECT TO_DATE('31-DEC-' || TO_CHAR(SYSDATE,'YYYY'),'DD-MON-YYYY') - SYSDATE 
+AS days_remaining
+FROM dual;
+
+--------------------------------------------------
+
+-- 2. Highest, lowest salary and difference
+SELECT MAX(sal) AS highest_salary,
+       MIN(sal) AS lowest_salary,
+       MAX(sal) - MIN(sal) AS difference
+FROM employee;
+
+--------------------------------------------------
+
+-- 3. Employees whose commission > 25% of salary
+SELECT *
+FROM employee
+WHERE comm > 0.25 * sal;
+
+--------------------------------------------------
+
+-- 4. Display salary in dollar format
+SELECT ename,
+       TO_CHAR(sal, '$9999.99') AS salary_in_dollar
+FROM employee;
+
+--------------------------------------------------
+
+-- 5. Matrix query (job-wise salary per department)
+SELECT job,
+       SUM(CASE WHEN deptno = 10 THEN sal ELSE 0 END) AS dept10,
+       SUM(CASE WHEN deptno = 20 THEN sal ELSE 0 END) AS dept20,
+       SUM(CASE WHEN deptno = 30 THEN sal ELSE 0 END) AS dept30,
+       SUM(sal) AS total_salary
+FROM employee
+GROUP BY job;
+
+--------------------------------------------------
+
+-- 6. Total employees + hired per year
+SELECT COUNT(*) AS total_employees,
+       SUM(CASE WHEN TO_CHAR(hiredate,'YYYY') = '1980' THEN 1 ELSE 0 END) AS "1980",
+       SUM(CASE WHEN TO_CHAR(hiredate,'YYYY') = '1981' THEN 1 ELSE 0 END) AS "1981",
+       SUM(CASE WHEN TO_CHAR(hiredate,'YYYY') = '1982' THEN 1 ELSE 0 END) AS "1982",
+       SUM(CASE WHEN TO_CHAR(hiredate,'YYYY') = '1983' THEN 1 ELSE 0 END) AS "1983"
+FROM employee;
+
+--------------------------------------------------
+
+-- 7. Last Sunday of current month
+SELECT NEXT_DAY(LAST_DAY(SYSDATE) - 7, 'SUNDAY') AS last_sunday
+FROM dual;
+
+--------------------------------------------------
+
+-- 8. Department wise employee count
+SELECT deptno, COUNT(*) AS total_employees
+FROM employee
+GROUP BY deptno;
+
+--------------------------------------------------
+
+-- 9. Job wise employee count
+SELECT job, COUNT(*) AS total_employees
+FROM employee
+GROUP BY job;
+
+--------------------------------------------------
+
+-- 10. Department wise total salary
+SELECT deptno, SUM(sal) AS total_salary
+FROM employee
+GROUP BY deptno;
