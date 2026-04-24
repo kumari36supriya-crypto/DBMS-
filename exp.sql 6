@@ -1,0 +1,69 @@
+-- PROGRAM 6: DBMS LAB
+
+-- 1. Display empno, ename, deptno with department name using DECODE
+SELECT empno, ename, deptno,
+DECODE(deptno, 10, 'RESEARCH',
+               20, 'ACCOUNTING',
+               30, 'SALES',
+               40, 'OPERATIONS') AS dept_name
+FROM employee;
+
+-- 2. Display your age in days (example DOB change kar lena)
+SELECT (SYSDATE - TO_DATE('01-JAN-2004','DD-MON-YYYY')) AS age_in_days
+FROM dual;
+
+-- 3. Display your age in months
+SELECT MONTHS_BETWEEN(SYSDATE, TO_DATE('01-JAN-2004','DD-MON-YYYY')) AS age_in_months
+FROM dual;
+
+-- 4. Display current date in format
+SELECT TO_CHAR(SYSDATE, 'DDth Month Day YYYY') AS formatted_date
+FROM dual;
+
+-- 5. Example output sentence
+SELECT ename || ' has joined the company on ' ||
+TO_CHAR(hiredate, 'Day DDth Month YYYY') AS details
+FROM employee;
+
+-- 6. Nearest Saturday after current date
+SELECT NEXT_DAY(SYSDATE, 'SATURDAY') AS next_saturday
+FROM dual;
+
+-- 7. Display current time
+SELECT TO_CHAR(SYSDATE, 'HH24:MI:SS') AS current_time
+FROM dual;
+
+-- 8. Date three months before current date
+SELECT ADD_MONTHS(SYSDATE, -3) AS three_months_before
+FROM dual;
+
+-- 9. Employees who joined in December
+SELECT * 
+FROM employee
+WHERE TO_CHAR(hiredate, 'MON') = 'DEC';
+
+-- 10. Employees whose first 2 characters of hiredate = last 2 of salary
+SELECT *
+FROM employee
+WHERE SUBSTR(TO_CHAR(hiredate,'DDMMYY'),1,2) =
+      SUBSTR(TO_CHAR(sal),-2);
+
+-- 11. Employees whose 10% salary = year of joining
+SELECT *
+FROM employee
+WHERE (sal * 0.10) = TO_NUMBER(TO_CHAR(hiredate,'YYYY'));
+
+-- 12. Employees who joined before 15th of month
+SELECT *
+FROM employee
+WHERE TO_NUMBER(TO_CHAR(hiredate,'DD')) < 15;
+
+-- 13. Same condition (duplicate but clearer)
+SELECT *
+FROM employee
+WHERE EXTRACT(DAY FROM hiredate) < 15;
+
+-- 14. Employees whose joining date matches deptno (rare case)
+SELECT *
+FROM employee
+WHERE TO_CHAR(hiredate,'DD') = deptno;
