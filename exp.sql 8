@@ -1,0 +1,96 @@
+-- ==============================
+-- EXPERIMENT 8 (DBMS LAB)
+-- ==============================
+
+-- 1. Display all employees with their department name
+SELECT e.ename, d.dname
+FROM employee e
+JOIN department d
+ON e.deptno = d.deptno;
+
+--------------------------------------------------
+
+-- 2. Employees whose manager is JONES
+SELECT e.ename AS employee, m.ename AS manager
+FROM employee e
+JOIN employee m
+ON e.mgr = m.empno
+WHERE m.ename = 'JONES';
+
+--------------------------------------------------
+
+-- 3. Employee name, job, dept name, manager name
+SELECT e.ename, e.job, d.dname, m.ename AS manager
+FROM employee e
+JOIN department d ON e.deptno = d.deptno
+LEFT JOIN employee m ON e.mgr = m.empno
+ORDER BY d.dname;
+
+--------------------------------------------------
+
+-- 4. Employees except clerks, sorted by highest salary
+SELECT e.ename, e.job, e.sal, d.dname
+FROM employee e
+JOIN department d ON e.deptno = d.deptno
+WHERE e.job <> 'CLERK'
+ORDER BY e.sal DESC;
+
+--------------------------------------------------
+
+-- 5. Employee with manager (include those without manager)
+SELECT e.ename AS employee, m.ename AS manager
+FROM employee e
+LEFT JOIN employee m
+ON e.mgr = m.empno;
+
+--------------------------------------------------
+
+-- 6. Employees earning 36000 annually OR not clerks
+SELECT e.ename, e.job, (e.sal*12) AS annual_salary,
+       e.deptno, d.dname
+FROM employee e
+JOIN department d ON e.deptno = d.deptno
+WHERE (e.sal*12) >= 36000 OR e.job <> 'CLERK';
+
+--------------------------------------------------
+
+-- 7. Employees earning 30000 annually AND not clerks
+SELECT e.ename, e.job, (e.sal*12) AS annual_salary,
+       e.deptno, d.dname
+FROM employee e
+JOIN department d ON e.deptno = d.deptno
+WHERE (e.sal*12) >= 30000 AND e.job <> 'CLERK';
+
+--------------------------------------------------
+
+-- 8. Employee with manager details (show 'No Manager')
+SELECT e.ename AS employee,
+       NVL(m.ename, 'No Manager') AS manager
+FROM employee e
+LEFT JOIN employee m
+ON e.mgr = m.empno;
+
+--------------------------------------------------
+
+-- 9. Department name, deptno and total salary
+SELECT d.dname, d.deptno, SUM(e.sal) AS total_salary
+FROM department d
+JOIN employee e
+ON d.deptno = e.deptno
+GROUP BY d.dname, d.deptno;
+
+--------------------------------------------------
+
+-- 10. Employee number, name and department (location optional)
+SELECT e.empno, e.ename, d.dname
+FROM employee e
+JOIN department d
+ON e.deptno = d.deptno;
+
+--------------------------------------------------
+
+-- 11. Employee name and department name
+SELECT e.ename, d.dname
+FROM employee e
+JOIN department d
+ON e.deptno = d.deptno;
