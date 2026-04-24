@@ -1,0 +1,91 @@
+-- ==============================
+-- EXPERIMENT 12 (DBMS LAB)
+-- ==============================
+
+-- 1. Employees whose salary < their manager but > salary of any other managers
+SELECT e.ename
+FROM employee e
+JOIN employee m ON e.mgr = m.empno
+WHERE e.sal < m.sal
+AND e.sal > ANY (
+    SELECT sal FROM employee WHERE job = 'MANAGER'
+);
+
+--------------------------------------------------
+
+-- 2. Number of employees whose salary > their manager salary
+SELECT COUNT(*)
+FROM employee e
+JOIN employee m ON e.mgr = m.empno
+WHERE e.sal > m.sal;
+
+--------------------------------------------------
+
+-- 3. Managers not working under PRESIDENT but under another manager
+SELECT m.ename
+FROM employee m
+WHERE m.job = 'MANAGER'
+AND m.mgr IS NOT NULL
+AND m.mgr <> (
+    SELECT empno FROM employee WHERE job = 'PRESIDENT'
+);
+
+--------------------------------------------------
+
+-- 4. Delete departments where no employee is working
+DELETE FROM department
+WHERE deptno NOT IN (
+    SELECT DISTINCT deptno FROM employee
+);
+
+--------------------------------------------------
+
+-- 5. Delete employees whose deptno not present in department table
+DELETE FROM employee
+WHERE deptno NOT IN (
+    SELECT deptno FROM department
+);
+
+--------------------------------------------------
+
+-- 6. Employees whose salary is outside grade range
+SELECT e.ename, e.sal
+FROM employee e
+LEFT JOIN salgrade s 
+ON e.sal BETWEEN s.losal AND s.hisal
+WHERE s.grade IS NULL;
+
+--------------------------------------------------
+
+-- 7. Employee with highest net pay
+SELECT ename, sal, comm, (sal + NVL(comm,0)) AS net_pay
+FROM employee
+WHERE (sal + NVL(comm,0)) = (
+    SELECT MAX(sal + NVL(comm,0)) FROM employee
+);
+
+--------------------------------------------------
+
+-- 8. Employees working in SALES or RESEARCH
+SELECT e.ename
+FROM employee e
+JOIN department d ON e.deptno = d.deptno
+WHERE d.dname IN ('SALES','RESEARCH');
+
+--------------------------------------------------
+
+-- 9. Grade of JONES
+SELECT s.grade
+FROM employee e
+JOIN salgrade s 
+ON e.sal BETWEEN s.losal AND s.hisal
+WHERE e.ename = 'JONES';
+
+--------------------------------------------------
+
+-- 10. Department name where number of characters = employees in any department
+SELECT d.dname
+FROM department d
+WHERE LENGTH(d.dname) IN (
+    SELECT COUNT(*) FROM employee GROUP BY deptno
+);
